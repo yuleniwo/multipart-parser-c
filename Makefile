@@ -1,11 +1,37 @@
-CFLAGS?=-std=c89 -ansi -pedantic -O4 -Wall -fPIC 
+CC		:= gcc
+CFLAGS	:= -D NDEBUG -Wall -O2 -Wno-unused
+LD		:= gcc
+LDFLAGS	:= 
 
-default: multipart_parser.o
+SRCS	:= multipart_parser.c main.c
+OBJS	:= $(SRCS:%.c=%.o)
+TARGET	:= main
 
-multipart_parser.o: multipart_parser.c multipart_parser.h
+DEPS		:= $(OBJS:%.o=%.d)
+EXISTS_DEPS	:= $(wildcard $(DEPS))
 
-solib: multipart_parser.o
-	$(CC) -shared -Wl,-soname,libmultipart.so -o libmultipart.so multipart_parser.o
+all: $(DEPS) $(TARGET)
+	@echo done.
+
+$(DEPS): %.d:%.c
+	$(CC) -c $(CFLAGS) -Wp,-MMD,$@ -MT $(@:%.d=%.o) -MT $@ -o $(@:%.d=%.o) $<
+
+$(TARGET): $(OBJS)
+	@echo "---- Build : $@ ----"
+	$(LD) $^ $(LDFLAGS) -o $@
 
 clean:
-	rm -f *.o *.so
+	rm -f *.o
+	rm -f *.d
+	rm -f $(TARGET)
+
+cleanobj:
+	rm -f *.o
+	rm -f *.d
+
+ifeq ($(findstring $(MAKECMDGOALS), clean cleanobj),)
+ifneq ($(EXISTS_DEPS),)
+sinclude $(EXISTS_DEPS)
+endif
+endif
+
