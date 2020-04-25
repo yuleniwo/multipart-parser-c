@@ -10,7 +10,8 @@ Implementation based on [node-formidable](https://github.com/felixge/node-formid
 Inspired by [http-parser](https://github.com/joyent/http-parser) by [Ryan Dahl](https://github.com/ry).
 
 ### Usage (C)
-Example[main.c](https://github.com/yuleniwo/multipart-parser-c/main.c)
+See example [main.c](https://github.com/yuleniwo/multipart-parser-c/blob/master/main.c)
+
 This parser library works with several callbacks, which the user may set up at application initialization time.
 
 ```c
@@ -29,13 +30,13 @@ Returning a value other than 0 from the callbacks will abort message processing.
 ```c
 int read_header_name(multipart_parser* p, const char *at, size_t length)
 {
-   printf("%.*s: ", length, at);
+   printf("%s(%d) [%.*s]\n", __FUNCTION__, (int)length, (int)length, at);
    return 0;
 }
 
 int read_header_value(multipart_parser* p, const char *at, size_t length)
 {
-   printf("%.*s\n", length, at);
+   printf("%s(%d) [%.*s]\n", __FUNCTION__, (int)length, (int)length, at);
    return 0;
 }
 ```
@@ -55,3 +56,5 @@ multipart_parser_uninit(&mp);
 * [Jay Miller](http://www.cryptofreak.org)
 
 © 2012 [Igor Afonov](http://iafonov.github.com)
+
+© 2020 [yuleniwo](https://github.com/yuleniwo)
